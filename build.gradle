@@ -1,10 +1,9 @@
 group 'com.yipingfang'
 version '1.0.0-SNAPSHOT'
 
-apply from: 'https://raw.githubusercontent.com/ihaiker/commons/master/gradle/commons.gradle'
+apply from: 'gradle/commons.gradle'
 
 project(":module") {
-
     dependencies {
         compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
             exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'

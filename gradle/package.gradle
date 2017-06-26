@@ -1,0 +1,45 @@
+task copyRuntime(type: Copy, dependsOn: build) {
+    doFirst {
+        def io = new URL("https://raw.githubusercontent.com/ihaiker/commons/master/assembly/bin/server.sh")
+        def input = io.openStream();
+        def output = new FileOutputStream(file("${project.buildDir}/start.sh"))
+        def l = -1;
+        def bs = new byte[1024];
+        while( (l = input.read(bs)) != -1 ){
+            output.write(bs,0,l)
+        }
+        input.close()
+        output.close()
+    }
+    into("lib") {
+        from(configurations.runtime)
+        from("${rootDir}/server/${buildDir.name}/libs"){
+            exclude "*-javadoc.jar"
+            exclude "*-sources.jar"
+        }
+    }
+    from(file("${project.buildDir}/start.sh")) {
+        into("bin")
+        fileMode(0755)
+        rename { fileName -> "${rootProject.name}" }
+        filter{
+            String line -> line.replace("[MAIN_CLASS]", jar.manifest.attributes.get("Main-Class").toString())
+        }
+    }
+    if (runEnv.equals("product") || runEnv.equals('test')) {
+        from(file("/export/config/${rootProject.name}-${project.name}")) {
+            into("conf")
+        }
+    } else{
+        from(file("src/main/resources")) {
+            into("conf")
+        }
+    }
+    destinationDir = file("${buildDir}/assembly")
+}
+
+task pkg(type: Tar, dependsOn: copyRuntime) {
+    archiveName = "${rootProject.name}-${project.name}.tar"
+    from fileTree("${buildDir}/assembly")
+    into "${rootProject.name}-${project.name}"
+}
