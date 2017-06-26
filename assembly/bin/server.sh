@@ -66,7 +66,7 @@ start(){
     fi
 
     echo -e "Starting the $SERVER_NAME ...\c"
-    nohup java $JAVA_OPTS -classpath $CONF_DIR:$LIB_JARS [MAIN_CLASS] --spring.config.location=$CONF_DIR/application.properties > $STDOUT_FILE 2>&1 &
+    nohup java $JAVA_OPTS -classpath $CONF_DIR:$LIB_JARS [MAIN_CLASS] --spring.config.location=$CONF_DIR > $STDOUT_FILE 2>&1 &
 
     COUNT=0
     while [ $COUNT -lt 1 ]; do
