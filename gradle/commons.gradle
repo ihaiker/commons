@@ -4,7 +4,7 @@ ext {
     springBootVersion = "1.5.2.RELEASE"
     springVersion = "4.3.7.RELEASE"
     fastjsonVersion = "1.2.3"
-    druidVersion = "1.0.15"
+    druidVersion = "1.1.0"
     mysqlDriverVersion = "5.1.26"
     lombokVersion = "1.16.6"
     junitVersion = "4.12"
