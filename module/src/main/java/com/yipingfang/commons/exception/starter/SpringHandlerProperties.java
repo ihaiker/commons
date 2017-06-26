@@ -8,4 +8,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class SpringHandlerProperties {
     //是否起效
     private boolean enable = false;
+    private String key = "";
 }

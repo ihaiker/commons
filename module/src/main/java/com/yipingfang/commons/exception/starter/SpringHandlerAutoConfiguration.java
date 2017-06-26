@@ -29,6 +29,6 @@ public class SpringHandlerAutoConfiguration {
     @ConditionalOnProperty(prefix = "spring.handler", name = "enable", havingValue = "true", matchIfMissing = false)
     public ExceptionHandler exceptionHandler() {
         log.info("init default exception handler");
-        return new ExceptionHandler("");
+        return new ExceptionHandler(properties.getKey());
     }
 }
