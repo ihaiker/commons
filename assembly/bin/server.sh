@@ -97,7 +97,7 @@ stop(){
     fi
 
     if [ "$1" != "skip" ]; then
-        $0 dump
+        dump
     fi
 
     echo -e "Stopping the $SERVER_NAME ...\c"

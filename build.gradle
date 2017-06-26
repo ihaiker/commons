@@ -2,3 +2,15 @@ group 'com.yipingfang'
 version '1.0.0-SNAPSHOT'
 
 apply from: 'https://raw.githubusercontent.com/ihaiker/commons/master/gradle/commons.gradle'
+
+project(":module") {
+
+    dependencies {
+        compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+        }
+        compile "com.alibaba:fastjson:${fastjsonVersion}"
+        compile "com.google.guava:guava:${guavaVersion}"
+        compileOnly "javax.servlet:javax.servlet-api:3.1.0"
+    }
+}
