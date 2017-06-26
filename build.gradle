@@ -1,14 +1,4 @@
 group 'com.yipingfang'
 version '1.0.0-SNAPSHOT'
 
-apply plugin: 'java'
-
-sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-}
+apply from: 'https://raw.githubusercontent.com/ihaiker/commons/master/gradle/commons.gradle'
