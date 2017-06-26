@@ -11,6 +11,8 @@ project(":api") {
 
     dependencies{
         compile project(":entry")
+        compile 'com.squareup.retrofit2:retrofit:2.3.0'
+        compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     }
 }
 
@@ -19,6 +21,8 @@ project(':server') {
 
     dependencies {
         compile project(":entry")
+
+        compile "com.yipingfang:commons-module:1.0.0-SNAPSHOT"
 
         compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
             exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
