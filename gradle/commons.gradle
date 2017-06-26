@@ -1,0 +1,65 @@
+group "com.yipingfang.module"
+
+ext {
+    nexusPath = "http://123.56.122.65:8081/nexus"
+
+    springBootVersion = "1.5.2.RELEASE"
+    springVersion = "4.3.7.RELEASE"
+    fastjsonVersion = "1.2.3"
+    druidVersion = "1.0.15"
+    mysqlDriverVersion = "5.1.26"
+    lombokVersion = "1.16.6"
+    junitVersion = "4.12"
+    guavaVersion = "21.0"
+
+    runEnv = "dev"
+    sdkVersion = "1.0.0-SNAPSHOT"
+
+    if (project.hasProperty('product')) {
+        runEnv = "product"
+        version version.replaceAll("-SNAPSHOT", "-RELEASE")
+        sdkVersion = sdkVersion.replaceAll("-SNAPSHOT", "-RELEASE")
+    } else if (project.hasProperty('test')) {
+        runEnv = "test"
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'maven'
+
+    group "${rootProject.group}"
+    version "${rootProject.version}"
+
+    archivesBaseName = "${rootProject.name}-${project.name}"
+
+    ext {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+
+        compileJava.options.encoding = 'UTF-8'
+        compileTestJava.options.encoding = 'UTF-8'
+        javadoc.options.encoding = 'UTF-8'
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            eachDependency { details ->
+                if (runEnv.equals("product") && details.requested.group.startsWith("com.yipingfang")) {
+                    details.useVersion(details.requested.version.replaceAll("-SNAPSHOT","-RELEASE"))
+                }
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+        maven { url "${nexusPath}/content/groups/public" }
+        mavenCentral()
+    }
+
+    dependencies {
+        compileOnly "org.projectlombok:lombok:1.16.6"
+    }
+}

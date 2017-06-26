@@ -1,0 +1,104 @@
+apply from : ""
+
+project(":api") {
+    jar {
+        baseName "${rootProject.name}-${project.name}"
+    }
+
+    task sourceJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    uploadArchives {
+        configuration = configurations.archives
+        repositories {
+            mavenDeployer {
+                snapshotRepository(url: "${nexusPath}/content/repositories/snapshots") {
+                    authentication(userName: System.getenv("NEXUS_USER"), password: System.getenv("NEXUS_PASSWORD"))
+                }
+                repository(url: "${nexusPath}/content/repositories/releases") {
+                    authentication(userName: System.getenv("NEXUS_USER"), password: System.getenv("NEXUS_PASSWORD"))
+                }
+                pom.project {
+                    version "${rootProject.version}"
+                    artifactId "${rootProject.name}-${project.name}"
+                    groupId "com.yipingfang.api"
+                    packaging "jar"
+                    description "${rootProject.name}"
+                }
+            }
+        }
+    }
+
+    artifacts {
+        archives sourceJar
+    }
+
+    dependencies{
+        compile project(":entry")
+    }
+}
+
+project(':server') {
+    task copyRuntime(type: Copy, dependsOn: build) {
+        doFirst {
+            def io = new URL("https://raw.githubusercontent.com/ihaiker/gradle/master/assembly/bin/server.sh")
+            def input = io.openStream();
+            def output = new FileOutputStream(file("${project.buildDir}/start.sh"))
+            def l = -1;
+            def bs = new byte[1024];
+            while( (l = input.read(bs)) != -1 ){
+                output.write(bs,0,l)
+            }
+            input.close()
+            output.close()
+        }
+        into("lib") {
+            from(configurations.runtime)
+            from("${rootDir}/server/${buildDir.name}/libs"){
+                exclude "*-javadoc.jar"
+                exclude "*-sources.jar"
+            }
+        }
+        from(file("${project.buildDir}/start.sh")) {
+            into("bin")
+            fileMode(0755)
+            rename { fileName -> "${rootProject.name}" }
+            filter{
+                String line -> line.replace("[MAIN_CLASS]", jar.manifest.attributes.get("Main-Class").toString())
+            }
+        }
+        if (runEnv.equals("product") || runEnv.equals('test')) {
+            from(file("/export/config/${rootProject.name}")) {
+                into("conf")
+            }
+        } else{
+            from(file("src/main/resources")) {
+                into("conf")
+            }
+        }
+        destinationDir = file("${buildDir}/assembly")
+    }
+
+    task pkg(type: Tar, dependsOn: copyRuntime) {
+        archiveName = "${rootProject.name}-server.tar"
+        from fileTree("${buildDir}/assembly")
+        into "${rootProject.name}-server"
+    }
+
+    dependencies {
+        compile project(":entry")
+
+        compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+        }
+        compile "org.springframework.boot:spring-boot-starter-jetty:${springBootVersion}"
+        compile "com.alibaba:fastjson:${fastjsonVersion}"
+
+        compile "com.google.guava:guava:${guavaVersion}"
+
+        testCompile "junit:junit:${junitVersion}"
+        testCompile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+    }
+}
