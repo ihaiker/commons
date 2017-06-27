@@ -9,6 +9,7 @@ ext {
     lombokVersion = "1.16.6"
     junitVersion = "4.12"
     guavaVersion = "21.0"
+    retrofitVersion = "2.3.0"
 
     runEnv = "dev"
     sdkVersion = "1.0.0-SNAPSHOT"

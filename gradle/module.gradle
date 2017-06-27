@@ -6,13 +6,13 @@ project(":api") {
     jar {
         baseName "${rootProject.name}-${project.name}"
     }
-
     apply from : "https://raw.githubusercontent.com/ihaiker/commons/master/gradle/upload.gradle"
-
     dependencies{
         compile project(":entry")
-        compile 'com.squareup.retrofit2:retrofit:2.3.0'
-        compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+
+        compile "com.yipingfang:commons-module:${sdkVersion}"
+        compile "com.squareup.retrofit2:retrofit:${retrofitVersion}"
+        compile "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
     }
 }
 
@@ -22,7 +22,7 @@ project(':server') {
     dependencies {
         compile project(":entry")
 
-        compile "com.yipingfang:commons-module:1.0.0-SNAPSHOT"
+        compile "com.yipingfang:commons-module:${sdkVersion}"
 
         compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
             exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'

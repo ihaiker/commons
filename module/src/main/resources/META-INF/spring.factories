@@ -1,1 +1,3 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.yipingfang.commons.exception.starter.SpringHandlerAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.yipingfang.commons.exception.starter.SpringHandlerAutoConfiguration,\
+com.yipingfang.commons.api.starter.ApiAutoConfiguration
