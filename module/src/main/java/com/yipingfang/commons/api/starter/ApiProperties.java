@@ -17,7 +17,7 @@ import java.util.Map;
 @ConfigurationProperties("spring.api")
 public class ApiProperties {
 
-    private String[] scanPackage;
+    private String[] scanPackage = new String[]{"com.yipingfang"};
 
     private Map<String,String> domain;
 

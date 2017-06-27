@@ -13,6 +13,14 @@ project(":api") {
         compile "com.yipingfang:commons-module:${sdkVersion}"
         compile "com.squareup.retrofit2:retrofit:${retrofitVersion}"
         compile "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
+
+        testCompile "junit:junit:${junitVersion}"
+        testCompile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+        testCompile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+        }
+        testCompile "org.springframework.boot:spring-boot-starter-jetty:${springBootVersion}"
+        testCompile "com.alibaba:fastjson:${fastjsonVersion}"
     }
 }
 
