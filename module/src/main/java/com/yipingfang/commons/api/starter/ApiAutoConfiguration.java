@@ -1,11 +1,14 @@
 package com.yipingfang.commons.api.starter;
 
 import com.yipingfang.commons.api.BeanScannerConfigurer;
+import com.yipingfang.commons.exception.ExceptionHandler;
+import com.yipingfang.commons.exception.starter.SpringHandlerProperties;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -15,20 +18,17 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Slf4j
 @Configuration
 @ConditionalOnClass({BeanScannerConfigurer.class})
 @EnableConfigurationProperties({ApiProperties.class})
+@AutoConfigureBefore(WebMvcAutoConfiguration.class)
+@Slf4j
 public class ApiAutoConfiguration implements ApplicationContextAware {
 
-    @Setter ApiProperties apiProperties;
-    @Setter ApplicationContext applicationContext;
-
-
-    public ApiAutoConfiguration(){}
-    public ApiAutoConfiguration(ApiProperties apiProperties){
-        this.apiProperties = apiProperties;
-    }
+    @Setter
+    ApiProperties apiProperties;
+    @Setter
+    ApplicationContext applicationContext;
 
     @Bean
     @ConditionalOnMissingBean
