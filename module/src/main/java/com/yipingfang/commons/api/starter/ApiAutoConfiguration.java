@@ -1,6 +1,8 @@
 package com.yipingfang.commons.api.starter;
 
 import com.yipingfang.commons.api.BeanScannerConfigurer;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -19,19 +21,20 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties({ApiProperties.class})
 public class ApiAutoConfiguration implements ApplicationContextAware {
 
-    private final ApiProperties properties;
-
+    @Setter ApiProperties apiProperties;
     @Setter ApplicationContext applicationContext;
 
-    public ApiAutoConfiguration(ApiProperties properties) {
-        this.properties = properties;
+
+    public ApiAutoConfiguration(){}
+    public ApiAutoConfiguration(ApiProperties apiProperties){
+        this.apiProperties = apiProperties;
     }
 
     @Bean
     @ConditionalOnMissingBean
     public BeanScannerConfigurer beanScannerConfigurer() {
         BeanScannerConfigurer configurer = new BeanScannerConfigurer();
-        configurer.setApiProperties(properties);
+        configurer.setApiProperties(apiProperties);
         configurer.setApplicationContext(applicationContext);
         return configurer;
     }

@@ -4,6 +4,33 @@ version '1.0.0-SNAPSHOT'
 apply from: 'gradle/commons.gradle'
 
 project(":module") {
+    task sourceJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+    uploadArchives {
+        configuration = configurations.archives
+        repositories {
+            mavenDeployer {
+                snapshotRepository(url: "${nexusPath}/content/repositories/snapshots") {
+                    authentication(userName: System.getenv("NEXUS_USER"), password: System.getenv("NEXUS_PASSWORD"))
+                }
+                repository(url: "${nexusPath}/content/repositories/releases") {
+                    authentication(userName: System.getenv("NEXUS_USER"), password: System.getenv("NEXUS_PASSWORD"))
+                }
+                pom.project {
+                    version "${rootProject.version}"
+                    artifactId "${rootProject.name}-${project.name}"
+                    groupId "com.yipingfang.commons"
+                    packaging "jar"
+                }
+            }
+        }
+    }
+    artifacts {
+        archives sourceJar
+    }
+
     dependencies {
         compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
             exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'

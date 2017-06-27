@@ -6,7 +6,37 @@ project(":api") {
     jar {
         baseName "${rootProject.name}-${project.name}"
     }
-    apply from : "https://raw.githubusercontent.com/ihaiker/commons/master/gradle/upload.gradle"
+
+    task sourceJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    uploadArchives {
+        configuration = configurations.archives
+        repositories {
+            mavenDeployer {
+                snapshotRepository(url: "${nexusPath}/content/repositories/snapshots") {
+                    authentication(userName: System.getenv("NEXUS_USER"), password: System.getenv("NEXUS_PASSWORD"))
+                }
+                repository(url: "${nexusPath}/content/repositories/releases") {
+                    authentication(userName: System.getenv("NEXUS_USER"), password: System.getenv("NEXUS_PASSWORD"))
+                }
+                pom.project {
+                    version "${rootProject.version}"
+                    artifactId "${rootProject.name}-${project.name}"
+                    groupId "com.yipingfang.api"
+                    packaging "jar"
+                    description "${rootProject.name}"
+                }
+            }
+        }
+    }
+
+    artifacts {
+        archives sourceJar
+    }
+
     dependencies{
         compile project(":entry")
 
@@ -25,7 +55,52 @@ project(":api") {
 }
 
 project(':server') {
-    apply from : "https://raw.githubusercontent.com/ihaiker/commons/master/gradle/package.gradle"
+
+    task copyRuntime(type: Copy, dependsOn: build) {
+        doFirst {
+            def io = new URL("https://raw.githubusercontent.com/ihaiker/commons/master/assembly/bin/server.sh")
+            def input = io.openStream();
+            def output = new FileOutputStream(file("${project.buildDir}/start.sh"))
+            def l = -1;
+            def bs = new byte[1024];
+            while( (l = input.read(bs)) != -1 ){
+                output.write(bs,0,l)
+            }
+            input.close()
+            output.close()
+        }
+        into("lib") {
+            from(configurations.runtime)
+            from("${rootDir}/server/${buildDir.name}/libs"){
+                exclude "*-javadoc.jar"
+                exclude "*-sources.jar"
+            }
+        }
+        from(file("${project.buildDir}/start.sh")) {
+            into("bin")
+            fileMode(0755)
+            rename { fileName -> "${rootProject.name}" }
+            filter{
+                String line -> line.replace("[MAIN_CLASS]", jar.manifest.attributes.get("Main-Class").toString())
+            }
+        }
+        if (runEnv.equals("product") || runEnv.equals('test')) {
+            from(file("/export/config/${rootProject.name}-${project.name}")) {
+                into("conf")
+            }
+        } else{
+            from(file("src/main/resources")) {
+                into("conf")
+            }
+        }
+        destinationDir = file("${buildDir}/assembly")
+    }
+
+    task pkg(type: Tar, dependsOn: copyRuntime) {
+        archiveName = "${rootProject.name}-${project.name}.tar"
+        from fileTree("${buildDir}/assembly")
+        into "${rootProject.name}-${project.name}"
+    }
 
     dependencies {
         compile project(":entry")
