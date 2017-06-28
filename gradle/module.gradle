@@ -6,41 +6,12 @@ project(":api") {
     jar {
         baseName "${rootProject.name}-${project.name}"
     }
-
-    task sourceJar(type: Jar) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    uploadArchives {
-        configuration = configurations.archives
-        repositories {
-            mavenDeployer {
-                snapshotRepository(url: "${nexusPath}/content/repositories/snapshots") {
-                    authentication(userName: System.getenv("NEXUS_USER"), password: System.getenv("NEXUS_PASSWORD"))
-                }
-                repository(url: "${nexusPath}/content/repositories/releases") {
-                    authentication(userName: System.getenv("NEXUS_USER"), password: System.getenv("NEXUS_PASSWORD"))
-                }
-                pom.project {
-                    version "${rootProject.version}"
-                    artifactId "${rootProject.name}-${project.name}"
-                    groupId "com.yipingfang.api"
-                    packaging "jar"
-                    description "${rootProject.name}"
-                }
-            }
-        }
-    }
-
-    artifacts {
-        archives sourceJar
-    }
+    apply from : "https://raw.githubusercontent.com/ihaiker/commons/master/gradle/deploy.gradle"
 
     dependencies{
         compile project(":entry")
 
-        compile "com.yipingfang:commons-module:${sdkVersion}"
+        compile "com.yipingfang.commons:commons-api:${sdkVersion}"
         compile "com.squareup.retrofit2:retrofit:${retrofitVersion}"
         compile "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
 
@@ -55,7 +26,6 @@ project(":api") {
 }
 
 project(':server') {
-
     task copyRuntime(type: Copy, dependsOn: build) {
         doFirst {
             def io = new URL("https://raw.githubusercontent.com/ihaiker/commons/master/assembly/bin/server.sh")
@@ -105,7 +75,8 @@ project(':server') {
     dependencies {
         compile project(":entry")
 
-        compile "com.yipingfang:commons-module:${sdkVersion}"
+        compile "com.yipingfang.commons:commons-api:${sdkVersion}"
+        compile "com.yipingfang.commons:commons-module:${sdkVersion}"
 
         compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
             exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'

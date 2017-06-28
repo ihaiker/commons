@@ -1,6 +1,6 @@
 package com.yipingfang.commons.api;
 
-import com.yipingfang.commons.api.starter.ApiProperties;
+import com.yipingfang.commons.api.starter.SpringApiProperties;
 import lombok.Setter;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -15,13 +15,13 @@ public class BeanScannerConfigurer implements BeanFactoryPostProcessor, Applicat
     @Setter
     ApplicationContext applicationContext;
     @Setter
-    ApiProperties apiProperties;
+    SpringApiProperties springApiProperties;
 
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         Scanner scanner = new Scanner((BeanDefinitionRegistry) beanFactory);
-        scanner.setApiProperties(this.apiProperties);
+        scanner.setSpringApiProperties(this.springApiProperties);
         scanner.setResourceLoader(this.applicationContext);
-        scanner.scan(apiProperties.getScanPackage());
+        scanner.scan(springApiProperties.getScanPackage());
     }
 
 }

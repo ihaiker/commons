@@ -1,0 +1,26 @@
+task sourceJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+uploadArchives {
+    configuration = configurations.archives
+    repositories {
+        mavenDeployer {
+            snapshotRepository(url: "${nexusPath}/content/repositories/snapshots") {
+                authentication(userName: System.getenv("NEXUS_USER"), password: System.getenv("NEXUS_PASSWORD"))
+            }
+            repository(url: "${nexusPath}/content/repositories/releases") {
+                authentication(userName: System.getenv("NEXUS_USER"), password: System.getenv("NEXUS_PASSWORD"))
+            }
+            pom.project {
+                version "${rootProject.version}"
+                artifactId "${rootProject.name}-${project.name}"
+                groupId "${rootProject.group}"
+                packaging "jar"
+            }
+        }
+    }
+}
+artifacts {
+    archives sourceJar
+}

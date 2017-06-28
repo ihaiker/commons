@@ -1,8 +1,6 @@
 package com.yipingfang.commons.api.starter;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Map;
@@ -15,9 +13,9 @@ import java.util.Map;
  */
 @Data
 @ConfigurationProperties("spring.api")
-public class ApiProperties {
+public class SpringApiProperties {
 
-    private String[] scanPackage = new String[]{"com.yipingfang"};
+    private String[] scanPackage = new String[]{"com.yipingfang.api"};
 
     private Map<String,String> domain;
 

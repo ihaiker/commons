@@ -25,16 +25,16 @@ public class SynchronousCallAdapterFactory extends CallAdapter.Factory {
         boolean returnHttpCode = false;
         for (int i = 0; i < annotations.length; i++) {
             Annotation annotation = annotations[i];
-            if(annotation instanceof ReturnStatus){
+            if (annotation instanceof ReturnStatus) {
                 returnHttpCode = true;
             }
         }
-        return new CallAdapterFactory(returnType,returnHttpCode);
+        return new CallAdapterFactory(returnType, returnHttpCode);
     }
 
     @Data
     @AllArgsConstructor
-    static class CallAdapterFactory implements CallAdapter{
+    static class CallAdapterFactory implements CallAdapter {
         private Type responseType;
         private boolean returnHttpCode;
 
@@ -51,10 +51,15 @@ public class SynchronousCallAdapterFactory extends CallAdapter.Factory {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            if(returnHttpCode){
-                return response.code();
-            }else{
-
+            int code = response.code();
+            if (returnHttpCode) {
+                return code;
+            } else {
+                if (code / 100 == 2) {
+                } else {
+                    //TODO 异常处理
+                    //throw new HandlerException();
+                }
                 return response.body();
             }
         }
