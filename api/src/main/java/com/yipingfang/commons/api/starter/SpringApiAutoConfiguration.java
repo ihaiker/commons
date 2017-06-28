@@ -12,10 +12,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
+import org.springframework.core.env.*;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -46,13 +46,32 @@ public class SpringApiAutoConfiguration {
         }
         //==================================================================================//
         {
-            ((ConfigurableEnvironment)environment).getPropertySources().forEach(propertySource -> {
-                
+
+            Map<String,String> domains  = new HashMap<>();
+            getAllKnownProperties(environment).entrySet().forEach(stringObjectEntry -> {
+                String key = stringObjectEntry.getKey();
+                if(key.startsWith("spring.api.domain")){
+                    domains.put(key.substring("spring.api.domain".length()+1),stringObjectEntry.getValue().toString());
+                }
             });
-            Map map = environment.getProperty("spring.api.domain", Map.class);
-            System.out.println(map);
+            properties.setDomain(domains);
         }
         return properties;
+    }
+
+
+    private Map<String, Object> getAllKnownProperties(Environment env) {
+        Map<String, Object> rtn = new HashMap<>();
+        if (env instanceof ConfigurableEnvironment) {
+            for (PropertySource<?> propertySource : ((ConfigurableEnvironment) env).getPropertySources()) {
+                if (propertySource instanceof EnumerablePropertySource) {
+                    for (String key : ((EnumerablePropertySource) propertySource).getPropertyNames()) {
+                        rtn.put(key, propertySource.getProperty(key));
+                    }
+                }
+            }
+        }
+        return rtn;
     }
 
     @Bean
