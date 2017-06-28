@@ -3,30 +3,38 @@ version '1.0.0-SNAPSHOT'
 
 apply from: 'gradle/commons.gradle'
 
-project(":module") {
+subprojects{
     apply from: "${rootDir}/gradle/deploy.gradle"
+}
 
-    dependencies {
-        compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
-            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
-        }
+project(":core") {
+    dependencies{
         compile "com.alibaba:fastjson:${fastjsonVersion}"
         compile "com.google.guava:guava:${guavaVersion}"
-        compile "com.squareup.retrofit2:retrofit:${retrofitVersion}"
-        compile "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
-
-        compileOnly "javax.servlet:javax.servlet-api:3.1.0"
     }
 }
 
 project(":api") {
-    apply from: "${rootDir}/gradle/deploy.gradle"
-
     dependencies {
+        compile project(":core")
+
         compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
             exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
         }
         compile "com.squareup.retrofit2:retrofit:${retrofitVersion}"
         compile "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
+    }
+}
+
+project(":module") {
+    dependencies {
+        compile project(":core")
+
+        compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+        }
+        compile "com.squareup.retrofit2:retrofit:${retrofitVersion}"
+        compile "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
+        compileOnly "javax.servlet:javax.servlet-api:3.1.0"
     }
 }

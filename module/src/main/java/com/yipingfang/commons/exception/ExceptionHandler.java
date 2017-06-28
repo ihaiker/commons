@@ -1,5 +1,7 @@
 package com.yipingfang.commons.exception;
 
+import com.yipingfang.commons.core.ErrorEnum;
+import com.yipingfang.commons.core.HandlerException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;

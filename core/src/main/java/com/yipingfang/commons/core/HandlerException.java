@@ -1,4 +1,5 @@
-package com.yipingfang.commons.exception;
+package com.yipingfang.commons.core;
+
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -20,8 +21,14 @@ public class HandlerException extends RuntimeException {
     }
 
     public HandlerException(ErrorEnum err, Throwable throwable) {
-        super(err.name() + ":" + throwable);
-        this.err = err;
+        this(err, throwable.getMessage());
+    }
+
+    public HandlerException(int httpCode, String code, String message) {
+        this.err = ErrorEnum.InternalSystemError;
+        this.err.httpCode = httpCode;
+        this.err.errCode = code;
+        this.err.errMsg = message;
     }
 
     public int getHttpCode() {
@@ -34,8 +41,8 @@ public class HandlerException extends RuntimeException {
 
     public String toJsonString() {
         JSONObject json = new JSONObject();
-        json.put("err", err.errCode);
-        json.put("msg", err.errMsg);
+        json.put("error", err.errCode);
+        json.put("message", err.errMsg);
         return json.toString();
     }
 

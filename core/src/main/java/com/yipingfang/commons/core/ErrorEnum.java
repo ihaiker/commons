@@ -1,4 +1,4 @@
-package com.yipingfang.commons.exception;
+package com.yipingfang.commons.core;
 
 public enum ErrorEnum {
 
