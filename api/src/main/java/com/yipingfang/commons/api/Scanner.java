@@ -35,10 +35,10 @@ public class Scanner extends ClassPathBeanDefinitionScanner {
         Set<BeanDefinitionHolder> beanDefinitions = super.doScan(basePackages);
         for (BeanDefinitionHolder holder : beanDefinitions) {
             GenericBeanDefinition definition = (GenericBeanDefinition) holder.getBeanDefinition();
-            definition.setBeanClass(ApiServerFactoryBean.class);
             definition.getPropertyValues().add("serverClass", definition.getBeanClassName());
             definition.getPropertyValues().add("springApiProperties", springApiProperties);
             definition.getPropertyValues().add("executorService",executorService);
+            definition.setBeanClass(ApiServerFactoryBean.class);//这行必须在后面
         }
         return beanDefinitions;
     }
