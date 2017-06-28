@@ -26,11 +26,7 @@ project(":api") {
         compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
             exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
         }
-        compile "com.alibaba:fastjson:${fastjsonVersion}"
-        compile "com.google.guava:guava:${guavaVersion}"
         compile "com.squareup.retrofit2:retrofit:${retrofitVersion}"
         compile "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
-
-        compileOnly "javax.servlet:javax.servlet-api:3.1.0"
     }
 }

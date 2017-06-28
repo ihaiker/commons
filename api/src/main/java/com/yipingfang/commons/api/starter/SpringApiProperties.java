@@ -1,8 +1,10 @@
 package com.yipingfang.commons.api.starter;
 
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -12,12 +14,13 @@ import java.util.Map;
  * @version 2017/6/26 下午9:20
  */
 @Data
+@ToString
 @ConfigurationProperties("spring.api")
 public class SpringApiProperties {
 
     private String[] scanPackage = new String[]{"com.yipingfang.api"};
 
-    private Map<String,String> domain;
+    private Map<String, String> domain = new HashMap<>();
 
     private int newFixedThreadPool = 10;
 }

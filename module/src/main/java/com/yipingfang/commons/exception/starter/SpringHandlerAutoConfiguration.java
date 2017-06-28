@@ -11,11 +11,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@Slf4j
 @Configuration
 @ConditionalOnClass({ExceptionHandler.class})
 @EnableConfigurationProperties({SpringHandlerProperties.class})
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
-@Slf4j
 public class SpringHandlerAutoConfiguration {
 
     private final SpringHandlerProperties properties;
