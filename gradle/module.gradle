@@ -30,7 +30,7 @@ project(':server') {
         doFirst {
             def io = new URL("https://raw.githubusercontent.com/ihaiker/commons/master/assembly/bin/assembly")
             def input = io.openStream();
-            def output = new FileOutputStream(file("${project.buildDir}/assembly"))
+            def output = new FileOutputStream(file("${project.buildDir}/assembly.sh"))
             def l = -1;
             def bs = new byte[1024];
             while( (l = input.read(bs)) != -1 ){
@@ -46,10 +46,10 @@ project(':server') {
                 exclude "*-sources.jar"
             }
         }
-        from(file("${project.buildDir}/assembly")) {
+        from(file("${project.buildDir}/assembly.sh")) {
             into("bin")
             fileMode(0755)
-            //rename { fileName -> "${rootProject.name}" }
+            rename { fileName -> "assembly" }
             filter{
                 String line -> line.replace("[MAIN_CLASS]", jar.manifest.attributes.get("Main-Class").toString())
             }
