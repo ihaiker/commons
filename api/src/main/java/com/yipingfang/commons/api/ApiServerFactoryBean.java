@@ -14,7 +14,6 @@ import java.util.concurrent.ExecutorService;
 public class ApiServerFactoryBean<T> implements FactoryBean<T>, InitializingBean {
     private Class<?> serverClass;
     private Retrofit retrofit;
-    @Setter String baseUrl;
     @Setter SpringApiProperties springApiProperties;
     @Setter ExecutorService executorService;
 
@@ -32,10 +31,10 @@ public class ApiServerFactoryBean<T> implements FactoryBean<T>, InitializingBean
         Api api = this.serverClass.getAnnotation(Api.class);
         String baseUrl = api.value();
         if (StringUtils.hasText(baseUrl)) {
-            this.baseUrl = baseUrl;
+
         } else if (springApiProperties.getDomain() != null && !springApiProperties.getDomain().isEmpty()) {
             String domain = this.serverClass.getSimpleName();
-            this.baseUrl = springApiProperties.getDomain().get(domain);
+            baseUrl = springApiProperties.getDomain().get(domain);
         }
         if (!StringUtils.hasText(baseUrl)) {
             throw new Exception("the bean " + this.serverClass.getName() + " @Api value is null");
