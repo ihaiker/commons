@@ -235,5 +235,5 @@ case "$1" in
         tailLogs
         ;;
   *)
-        echo $"Usage: $0 {start|stop|restart|dump|tail}"
+        echo $"Usage: $0 {state|start|stop|restart|dump|tail}"
 esac
