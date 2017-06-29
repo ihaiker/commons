@@ -28,9 +28,9 @@ project(":api") {
 project(':server') {
     task copyRuntime(type: Copy, dependsOn: build) {
         doFirst {
-            def io = new URL("https://raw.githubusercontent.com/ihaiker/commons/master/assembly/bin/server.sh")
+            def io = new URL("https://raw.githubusercontent.com/ihaiker/commons/master/assembly/bin/assembly")
             def input = io.openStream();
-            def output = new FileOutputStream(file("${project.buildDir}/start.sh"))
+            def output = new FileOutputStream(file("${project.buildDir}/assembly"))
             def l = -1;
             def bs = new byte[1024];
             while( (l = input.read(bs)) != -1 ){
@@ -46,10 +46,10 @@ project(':server') {
                 exclude "*-sources.jar"
             }
         }
-        from(file("${project.buildDir}/start.sh")) {
+        from(file("${project.buildDir}/assembly")) {
             into("bin")
             fileMode(0755)
-            rename { fileName -> "${rootProject.name}" }
+            //rename { fileName -> "${rootProject.name}" }
             filter{
                 String line -> line.replace("[MAIN_CLASS]", jar.manifest.attributes.get("Main-Class").toString())
             }
