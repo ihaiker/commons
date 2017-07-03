@@ -1,0 +1,124 @@
+group 'com.yipingfang.gateway'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven'
+
+ext {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    compileJava.options.encoding = 'UTF-8'
+    compileTestJava.options.encoding = 'UTF-8'
+    javadoc.options.encoding = 'UTF-8'
+}
+
+ext {
+    nexusPath = "http://123.56.122.65:8081/nexus"
+
+    springBootVersion = "1.5.2.RELEASE"
+    springBootRedisVersion = ""
+    springVersion = "4.3.7.RELEASE"
+
+    fastjsonVersion = "1.2.3"
+
+    lombokVersion = "1.16.6"
+
+    guavaVersion = "21.0"
+    retrofitVersion = "2.3.0"
+
+    druidVersion = "1.1.0"
+    mysqlDriverVersion = "5.1.26"
+
+    junitVersion = "4.12"
+
+    runEnv = project.getProperties().getOrDefault("env","dev").toString()
+    sdkVersion = "1.0.0-SNAPSHOT"
+
+    if (runEnv.equals('product')) {
+        version version.replaceAll("-SNAPSHOT", "-RELEASE")
+        sdkVersion = sdkVersion.replaceAll("-SNAPSHOT", "-RELEASE")
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        eachDependency { details ->
+            if (runEnv.equals("product") && details.requested.group.startsWith("com.yipingfang")) {
+                details.useVersion(details.requested.version.replaceAll("-SNAPSHOT","-RELEASE"))
+            }
+        }
+    }
+}
+
+jar {
+    baseName "${project.name}"
+}
+
+repositories {
+    mavenLocal()
+    maven { url "${nexusPath}/content/groups/public" }
+    mavenCentral()
+}
+
+task copyRuntime(type: Copy, dependsOn: build) {
+    doFirst {
+        def io = new URL("https://raw.githubusercontent.com/ihaiker/commons/master/assembly/bin/services")
+        def input = io.openStream();
+        def output = new FileOutputStream(file("${buildDir}/services"))
+        def l = -1;
+        def bs = new byte[1024];
+        while( (l = input.read(bs)) != -1 ){
+            output.write(bs,0,l)
+        }
+        input.close()
+        output.close()
+    }
+    into("lib") {
+        from(configurations.runtime)
+        from("${buildDir}/libs"){
+            exclude "*-javadoc.jar"
+            exclude "*-sources.jar"
+        }
+    }
+    from(file("${buildDir}/services")) {
+        into("bin")
+        filter{
+            String line -> line.replace("[MAIN_CLASS]", jar.manifest.attributes.get("Main-Class").toString())
+        }
+        fileMode(0755)
+    }
+    if (runEnv.equals("product") || runEnv.equals('test')) {
+        from(file("/export/config/${project.name}")) {
+            into("conf")
+        }
+    } else{
+        from(file("src/main/resources")) {
+            into("conf")
+        }
+    }
+    destinationDir = file("${buildDir}/assembly")
+}
+
+task pkg(type: Tar, dependsOn: copyRuntime) {
+    archiveName = "${project.name}.tar"
+    from fileTree("${buildDir}/assembly")
+    into "${project.name}"
+}
+
+dependencies {
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+
+    compile "com.alibaba:fastjson:${fastjsonVersion}"
+    compile "com.google.guava:guava:${guavaVersion}"
+    //compile "com.yipingfang.commons:commons-api:${sdkVersion}"
+    compile "com.squareup.retrofit2:retrofit:${retrofitVersion}"
+    compile "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
+    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
+    compile "org.springframework.boot:spring-boot-starter-jetty:${springBootVersion}"
+
+    testCompile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+    testCompile group: 'junit', name: 'junit', version: "${junitVersion}"
+}
